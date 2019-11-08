@@ -66,4 +66,26 @@ describe('Authentication', () => {
             .set("Authorization", `Bearer ${user.generateToken()}`) //setando o header para autenticar somente na presença de um token
         expect(response.status).toBe(200); 
     })
+
+    it('should not be able to acess private routes whithout jwt token', async()=>{
+        const user = await factory.create('User', {
+            password: '123321'
+        })
+        
+        const response = await request(app)
+            .get('/dashboard')
+
+            expect(response.status).toBe(401); 
+    })
+
+    it('should not be able to acess private routes with invalid jwt token', async () => {
+        const user = await factory.create('User', {
+            password: '123321'
+        })
+        
+        const response = await request(app)
+            .get('/dashboard')
+            .set("Authorization", `Bearer 4444`) //setando o header para autenticar somente na presença de um token
+        expect(response.status).toBe(401); 
+    })
 })
